@@ -211,6 +211,10 @@
   margin: 2px;
   padding: 3px 0;
 }
+.Select.is-multi .Select-control > span:first-child {
+  padding-left: 7px;
+  vertical-align: middle;
+}
 .Select.is-multi .Select-option.is-multiSum span {
   padding: 4px;
   background: rgba(0, 126, 255, 0.08);

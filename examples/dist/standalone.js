@@ -114,6 +114,7 @@ var Select = React.createClass({
 		onBlur: React.PropTypes.func, // onBlur handler: function(event) {}
 		onChange: React.PropTypes.func, // onChange handler: function(newValue) {}
 		onFocus: React.PropTypes.func, // onFocus handler: function(event) {}
+		onInputChange: React.PropTypes.func, // onInputChange handler: function(inputValue) {}
 		onOptionLabelClick: React.PropTypes.func, // onCLick handler for value labels: function (value, event) {}
 		optionComponent: React.PropTypes.func, // option component to render in dropdown
 		optionRenderer: React.PropTypes.func, // optionRenderer: function(option) {}
@@ -151,6 +152,7 @@ var Select = React.createClass({
 			newOptionCreator: undefined,
 			noResultsText: 'No results found',
 			onChange: undefined,
+			onInputChange: undefined,
 			onOptionLabelClick: undefined,
 			optionComponent: Option,
 			options: undefined,
@@ -344,7 +346,7 @@ var Select = React.createClass({
 	initValuesArray: function initValuesArray(values, options) {
 		if (!Array.isArray(values)) {
 			if (typeof values === 'string') {
-				values = values === '' ? [] : values.split(this.props.delimiter);
+				values = values === '' ? [] : this.props.multi ? values.split(this.props.delimiter) : [values];
 			} else {
 				values = values !== undefined && values !== null ? [values] : [];
 			}
@@ -500,14 +502,12 @@ var Select = React.createClass({
 	},
 
 	handleKeyDown: function handleKeyDown(event) {
-		console.log('in handlekeydown');
-
-		event.preventDefault();
 		if (this.props.disabled) return;
 		switch (event.keyCode) {
 			case 8:
 				// backspace
 				if (!this.state.inputValue && this.props.backspaceRemoves) {
+					event.preventDefault();
 					this.popValue();
 				}
 				return;
@@ -573,6 +573,10 @@ var Select = React.createClass({
 		console.log('in handleinputchange');
 		this._optionsFilterString = event.target.value;
 
+		if (this.props.onInputChange) {
+			this.props.onInputChange(event.target.value);
+		}
+
 		if (this.props.asyncOptions) {
 			this.setState({
 				isLoading: true,
@@ -596,7 +600,10 @@ var Select = React.createClass({
 	autoloadAsyncOptions: function autoloadAsyncOptions() {
 		var _this5 = this;
 
-		this.loadAsyncOptions(this.props.value || '', {}, function () {
+		this.setState({
+			isLoading: true
+		});
+		this.loadAsyncOptions(this.props.value || '', { isLoading: false }, function () {
 			// update with fetched but don't focus
 			_this5.setValue(_this5.props.value, false);
 		});
@@ -779,14 +786,15 @@ var Select = React.createClass({
 			var multiValues = this.state.values.map(function (val) {
 				val.type = 'multiSum';
 				val.isMulti = true;
+				var optionRenderer = this.props.optionRenderer;
 				val.renderLabel = function (op) {
 					var label = op.label;
-
-					if (this.props.optionRenderer) {
-						label = this.props.optionRenderer(op);
+					if (optionRenderer) {
+						label = optionRenderer(op);
 					}
 					return 'x ' + label;
 				};
+
 				val.selectValue = this.removeValue.bind(this, val);
 				return val;
 			}, this);
@@ -904,9 +912,9 @@ var Select = React.createClass({
 				value.push(valueComponent);
 			}, this);
 
-			// if (this.props.multiSum && value.length > 0){
-			// 	value = this.summarizeValues(value);
-			// }
+			if (this.props.multiSum && value.length > 0) {
+				value = this.summarizeValues(value);
+			}
 		}
 
 		if (!this.state.inputValue && (!this.props.multi || !value.length)) {
@@ -928,7 +936,7 @@ var Select = React.createClass({
 		}
 
 		var loading = this.state.isLoading ? React.createElement('span', { className: 'Select-loading', 'aria-hidden': 'true' }) : null;
-		var clear = this.props.clearable && this.state.value && !this.props.disabled ? React.createElement('span', { className: 'Select-clear', title: this.props.multi ? this.props.clearAllText : this.props.clearValueText, 'aria-label': this.props.multi ? this.props.clearAllText : this.props.clearValueText, onMouseDown: this.clearValue, onClick: this.clearValue, dangerouslySetInnerHTML: { __html: '&times;' } }) : null;
+		var clear = this.props.clearable && this.state.value && !this.props.disabled ? React.createElement('span', { className: 'Select-clear', title: this.props.multi ? this.props.clearAllText : this.props.clearValueText, 'aria-label': this.props.multi ? this.props.clearAllText : this.props.clearValueText, onMouseDown: this.clearValue, onTouchEnd: this.clearValue, onClick: this.clearValue, dangerouslySetInnerHTML: { __html: '&times;' } }) : null;
 
 		var menu;
 		var menuProps;
