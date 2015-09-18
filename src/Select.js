@@ -494,7 +494,6 @@ var Select = React.createClass({
 	handleInputChange: function(event) {
 		// assign an internal variable because we need to use
 		// the latest value before setState() has completed.
-		console.log('in handleinputchange')
 		this._optionsFilterString = event.target.value;
 
 		if (this.props.onInputChange) {

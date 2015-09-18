@@ -51,7 +51,11 @@ var Option = React.createClass({
 				onMouseDown: this.props.mouseDown,
 				onClick: this.props.mouseDown,
 				title: obj.title },
-			obj.create ? this.props.addLabelText.replace('{label}', obj.label) : renderedLabel
+			React.createElement(
+				'span',
+				null,
+				obj.create ? this.props.addLabelText.replace('{label}', obj.label) : renderedLabel
+			)
 		);
 	}
 });
@@ -102,6 +106,8 @@ var Select = React.createClass({
 		matchPos: React.PropTypes.string, // (any|start) match the start or entire string when filtering
 		matchProp: React.PropTypes.string, // (any|label|value) which option property to filter on
 		multi: React.PropTypes.bool, // multi-value input
+		multiSum: React.PropTypes.bool,
+		multiSumLimit: React.PropTypes.number,
 		name: React.PropTypes.string, // field name, for hidden <input /> tag
 		newOptionCreator: React.PropTypes.func, // factory to create new options when allowCreate set
 		noResultsText: React.PropTypes.string, // placeholder displayed when there are no matching search results
@@ -141,6 +147,7 @@ var Select = React.createClass({
 			inputProps: {},
 			matchPos: 'any',
 			matchProp: 'any',
+			multiSumLimit: 3,
 			name: undefined,
 			newOptionCreator: undefined,
 			noResultsText: 'No results found',
@@ -500,9 +507,10 @@ var Select = React.createClass({
 			case 8:
 				// backspace
 				if (!this.state.inputValue && this.props.backspaceRemoves) {
+					event.preventDefault();
 					this.popValue();
 				}
-				break;
+				return;
 			case 9:
 				// tab
 				if (event.shiftKey || !this.state.isOpen || !this.state.focusedOption) {
@@ -701,9 +709,11 @@ var Select = React.createClass({
 
 	focusAdjacentOption: function focusAdjacentOption(dir) {
 		this._focusedOptionReveal = true;
+
 		var ops = this.state.filteredOptions.filter(function (op) {
 			return !op.disabled;
 		});
+
 		if (!this.state.isOpen) {
 			this.setState({
 				isOpen: true,
@@ -765,24 +775,51 @@ var Select = React.createClass({
 			};
 			options.unshift(newOption);
 		}
-		var ops = Object.keys(options).map(function (key) {
-			var op = options[key];
+
+		if (this.props.multi && this.props.multiSum && this.state.values.length > 0) {
+			options = options.map(function (opt) {
+				opt.type = 'opt';
+				return opt;
+			});
+
+			var multiValues = this.state.values.map(function (val) {
+				val.type = 'multiSum';
+				val.isMulti = true;
+				var optionRenderer = this.props.optionRenderer;
+				val.renderLabel = function (op) {
+					var label = op.label;
+					if (optionRenderer) {
+						label = optionRenderer(op);
+					}
+					return 'x ' + label;
+				};
+
+				val.selectValue = this.removeValue.bind(this, val);
+				return val;
+			}, this);
+
+			options = multiValues.concat(options);
+		}
+
+		var ops = options.map(function (op) {
+			// var op = options[key];
 			var isSelected = this.state.value === op.value;
 			var isFocused = focusedValue === op.value;
 			var optionClass = classes({
 				'Select-option': true,
 				'is-selected': isSelected,
 				'is-focused': isFocused,
-				'is-disabled': op.disabled
+				'is-disabled': op.disabled,
+				'is-multiSum': op.isMulti
 			});
 			var ref = isFocused ? 'focused' : null;
 			var mouseEnter = this.focusOption.bind(this, op);
 			var mouseLeave = this.unfocusOption.bind(this, op);
-			var mouseDown = this.selectValue.bind(this, op);
+			var mouseDown = op.selectValue || this.selectValue.bind(this, op);
 			var optionResult = React.createElement(this.props.optionComponent, {
-				key: 'option-' + op.value,
+				key: 'option-' + op.value + '-' + op.type,
 				className: optionClass,
-				renderFunc: renderLabel,
+				renderFunc: op.renderLabel || renderLabel,
 				mouseEnter: mouseEnter,
 				mouseLeave: mouseLeave,
 				mouseDown: mouseDown,
@@ -823,6 +860,29 @@ var Select = React.createClass({
 		}
 	},
 
+	summarizeValues: function summarizeValues(values) {
+		var summary = '';
+
+		if (values.length < this.props.multiSumLimit) {
+			this.state.values.forEach(function (opt, i) {
+				summary = summary + opt.label;
+				if (i < values.length - 1) {
+					summary = summary + ', ';
+				}
+			});
+			return summary;
+		} else if (values.length === this.props.options.length) {
+			return 'All';
+		} else if (values.length >= this.props.options.length - 2) {
+			this.state.filteredOptions.forEach(function (opt) {
+				summary = summary + ', ' + opt.label;
+			});
+			return 'All except' + summary;
+		}
+
+		return summary = values.length + ' of ' + this.props.options.length + ' selected';
+	},
+
 	render: function render() {
 		var selectClass = classes('Select', this.props.className, {
 			'is-multi': this.props.multi,
@@ -835,6 +895,7 @@ var Select = React.createClass({
 		});
 		var value = [];
 		if (this.props.multi) {
+
 			this.state.values.forEach(function (val) {
 				var onOptionLabelClick = this.handleOptionLabelClick.bind(this, val);
 				var onRemove = this.removeValue.bind(this, val);
@@ -849,6 +910,10 @@ var Select = React.createClass({
 				});
 				value.push(valueComponent);
 			}, this);
+
+			if (this.props.multiSum && value.length > 0) {
+				value = this.summarizeValues(value);
+			}
 		}
 
 		if (!this.state.inputValue && (!this.props.multi || !value.length)) {
