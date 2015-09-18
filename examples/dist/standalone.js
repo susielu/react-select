@@ -51,7 +51,11 @@ var Option = React.createClass({
 				onMouseDown: this.props.mouseDown,
 				onClick: this.props.mouseDown,
 				title: obj.title },
-			obj.create ? this.props.addLabelText.replace('{label}', obj.label) : renderedLabel
+			React.createElement(
+				'span',
+				null,
+				obj.create ? this.props.addLabelText.replace('{label}', obj.label) : renderedLabel
+			)
 		);
 	}
 });
@@ -496,6 +500,8 @@ var Select = React.createClass({
 	},
 
 	handleKeyDown: function handleKeyDown(event) {
+		console.log('in handlekeydown');
+
 		event.preventDefault();
 		if (this.props.disabled) return;
 		switch (event.keyCode) {
@@ -564,6 +570,7 @@ var Select = React.createClass({
 	handleInputChange: function handleInputChange(event) {
 		// assign an internal variable because we need to use
 		// the latest value before setState() has completed.
+		console.log('in handleinputchange');
 		this._optionsFilterString = event.target.value;
 
 		if (this.props.asyncOptions) {
@@ -765,15 +772,20 @@ var Select = React.createClass({
 
 		if (this.props.multi && this.props.multiSum && this.state.values.length > 0) {
 			options = options.map(function (opt) {
-				opt.type = "opt";
+				opt.type = 'opt';
 				return opt;
 			});
 
 			var multiValues = this.state.values.map(function (val) {
-				val.type = "multiSum";
+				val.type = 'multiSum';
 				val.isMulti = true;
 				val.renderLabel = function (op) {
-					return "x " + op.label;
+					var label = op.label;
+
+					if (this.props.optionRenderer) {
+						label = this.props.optionRenderer(op);
+					}
+					return 'x ' + label;
 				};
 				val.selectValue = this.removeValue.bind(this, val);
 				return val;
@@ -842,13 +854,13 @@ var Select = React.createClass({
 	},
 
 	summarizeValues: function summarizeValues(values) {
-		var summary = "";
+		var summary = '';
 
 		if (values.length < this.props.multiSumLimit) {
 			this.state.values.forEach(function (opt, i) {
 				summary = summary + opt.label;
 				if (i < values.length - 1) {
-					summary = summary + ", ";
+					summary = summary + ', ';
 				}
 			});
 			return summary;
@@ -856,12 +868,12 @@ var Select = React.createClass({
 			return 'All';
 		} else if (values.length >= this.props.options.length - 2) {
 			this.state.filteredOptions.forEach(function (opt) {
-				summary = summary + ", " + opt.label;
+				summary = summary + ', ' + opt.label;
 			});
 			return 'All except' + summary;
 		}
 
-		return summary = values.length + " of " + this.props.options.length + " selected";
+		return summary = values.length + ' of ' + this.props.options.length + ' selected';
 	},
 
 	render: function render() {
@@ -892,9 +904,9 @@ var Select = React.createClass({
 				value.push(valueComponent);
 			}, this);
 
-			if (this.props.multiSum && value.length > 0) {
-				value = this.summarizeValues(value);
-			}
+			// if (this.props.multiSum && value.length > 0){
+			// 	value = this.summarizeValues(value);
+			// }
 		}
 
 		if (!this.state.inputValue && (!this.props.multi || !value.length)) {
