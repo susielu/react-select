@@ -889,7 +889,7 @@ var Select = React.createClass({
 			options.unshift(newOption);
 		}
 
-		if (this.props.multi && this.props.multiSum && this.state.values.length > 0) {
+		if (this.props.multi && this.props.multiSum) {
 			options = options.map(function (opt) {
 				opt.type = 'opt';
 				opt.isMulti = false;
@@ -898,27 +898,28 @@ var Select = React.createClass({
 				return opt;
 			});
 
-			var multiValues = this.state.values.map(function (val) {
-				val.type = 'multiSum';
-				val.isMulti = true;
-				var optionRenderer = this.props.optionRenderer;
-				val.renderLabel = function (op) {
-					var label = op.label;
-					if (optionRenderer) {
-						label = optionRenderer(op);
-					}
-					return 'x ' + label;
-				};
+			if (this.state.values.length > 0) {
+				var multiValues = this.state.values.map(function (val) {
+					val.type = 'multiSum';
+					val.isMulti = true;
+					var optionRenderer = this.props.optionRenderer;
+					val.renderLabel = function (op) {
+						var label = op.label;
+						if (optionRenderer) {
+							label = optionRenderer(op);
+						}
+						return 'x ' + label;
+					};
 
-				val.selectValue = this.removeValue.bind(this, val);
-				return val;
-			}, this);
+					val.selectValue = this.removeValue.bind(this, val);
+					return val;
+				}, this);
 
-			options = multiValues.concat(options);
+				options = multiValues.concat(options);
+			}
 		}
 
 		var ops = options.map(function (op) {
-			// var op = options[key];
 			var isSelected = this.state.value === op.value;
 			var isFocused = focusedValue === op.value;
 			var optionClass = classes({
