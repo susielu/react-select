@@ -1,5 +1,38 @@
 # React-Select
 
+## v0.7.0 / 2015-10-10
+
+React Select is updated for React 0.14. If you're still using React 0.13, please continue to use `react-select@0.6.x`. There are no functional differences between v0.7.0 and v0.6.12.
+
+Additionally, our tests now require Node.js 4.x. If you are developing `react-select`, please make sure you are running the latest version of node.
+
+Thanks to @bruderstein, @dmatteo and @hull for their help getting these updates shipped!
+
+## v0.6.12 / 2015-10-02
+
+* added; `labelKey` and `valueKey` props, so you can now use different keys in `option` objects for the label and value
+* fixed; additional `isMounted()` checks in timeouts
+* fixed; componentDidUpdate timeout is reset correctly, see #208 and #434, thanks [Petr Gladkikh](https://github.com/PetrGlad)
+* fixed; mousedown event on scrollbar in menu no longer hides it, thanks [Yishai Burt](https://github.com/burtyish)
+
+## v0.6.11 / 2015-09-28
+
+* added; `isLoading` prop, allows indication of async options loading in situations where more control is required, thanks [Jon Gautsch](https://github.com/jgautsch)
+
+## v0.6.10 / 2015-09-24
+
+* fixed; a build issue with the previous release that prevented the stylesheet being generated / included
+* fixed; a LESS syntax issue, thanks [Bob Cardenas](https://github.com/bcardi)
+
+## v0.6.9 / 2015-09-19
+
+* added; `style` key for package.json, thanks [Stephen Wan](https://github.com/stephen)
+* added; `onInputChange` handler that returns the current input value, thanks [Tom Leslie](https://github.com/lomteslie)
+* fixed; simplifying handleKey function & preventDefault behaviour, thanks [davidpene](https://github.com/davidpene)
+* fixed; Display spinner while auto-loading initial data, thanks [Ben Jenkinson](https://github.com/BenJenkinson)
+* fixed; better support for touch events, thanks [Montlouis-Calixte Stéphane](https://github.com/bulby97)
+* fixed; prevent value splitting on non-multi-value select, thanks [Alan R. Soares](https://github.com/alanrsoares)
+
 ## v0.6.8 / 2015-09-16
 
 * fixed; broader range of allowed prereleases for React 0.14, including rc1
