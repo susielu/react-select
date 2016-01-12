@@ -5,6 +5,7 @@ var Option = React.createClass({
 	propTypes: {
 		addLabelText: React.PropTypes.string,          // string rendered in case of allowCreate option passed to ReactSelect
 		className: React.PropTypes.string,             // className (based on mouse position)
+		click: React.PropTypes.func,				   // method to handle click events
 		mouseDown: React.PropTypes.func,               // method to handle click on option element
 		mouseEnter: React.PropTypes.func,              // method to handle mouseEnter on option element
 		mouseLeave: React.PropTypes.func,              // method to handle mouseLeave on option element
@@ -42,7 +43,7 @@ var Option = React.createClass({
 				 onMouseEnter={this.props.mouseEnter}
 				 onMouseLeave={this.props.mouseLeave}
 				 onMouseDown={this.props.mouseDown}
-				 onClick={this.props.mouseDown}
+				 onClick={this.props.click}
 				 title={obj.title}>
 				<span>{ obj.create ? this.props.addLabelText.replace('{label}', obj.label) : renderedLabel }</span>
 			</div>

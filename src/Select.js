@@ -312,7 +312,11 @@ var Select = React.createClass({
             this._focusAfterUpdate = true;
         }
         var newState = this.getStateFromValue(value);
-        newState.isOpen = false;
+        if (this.props.multi){
+            newState.isOpen = true;
+        } else {
+            newState.isOpen = false;
+        }
         this.fireChangeEvent(newState);
         this.setState(newState);
     },
@@ -767,15 +771,15 @@ var Select = React.createClass({
             var ref = isFocused ? 'focused' : null;
             var mouseEnter = this.focusOption.bind(this, op);
             var mouseLeave = this.unfocusOption.bind(this, op);
-            var mouseDown = op.selectValue || this.selectValue.bind(this, op);
+            var click = op.selectValue || this.selectValue.bind(this, op);
             var optionResult = React.createElement(this.props.optionComponent, {
                 key: 'option-' + op[this.props.valueKey],
                 className: optionClass,
                 renderFunc: ( op.renderLabel || renderLabel),
                 mouseEnter: mouseEnter,
                 mouseLeave: mouseLeave,
-                mouseDown: mouseDown,
-                click: mouseDown,
+                mouseDown: undefined,
+                click: click,
                 addLabelText: this.props.addLabelText,
                 option: op,
                 ref: ref

@@ -10,6 +10,7 @@ var Option = React.createClass({
 	propTypes: {
 		addLabelText: React.PropTypes.string, // string rendered in case of allowCreate option passed to ReactSelect
 		className: React.PropTypes.string, // className (based on mouse position)
+		click: React.PropTypes.func, // method to handle click events
 		mouseDown: React.PropTypes.func, // method to handle click on option element
 		mouseEnter: React.PropTypes.func, // method to handle mouseEnter on option element
 		mouseLeave: React.PropTypes.func, // method to handle mouseLeave on option element
@@ -48,7 +49,7 @@ var Option = React.createClass({
 				onMouseEnter: this.props.mouseEnter,
 				onMouseLeave: this.props.mouseLeave,
 				onMouseDown: this.props.mouseDown,
-				onClick: this.props.mouseDown,
+				onClick: this.props.click,
 				title: obj.title },
 			React.createElement(
 				'span',
@@ -494,7 +495,11 @@ var Select = React.createClass({
             this._focusAfterUpdate = true;
         }
         var newState = this.getStateFromValue(value);
-        newState.isOpen = false;
+        if (this.props.multi) {
+            newState.isOpen = true;
+        } else {
+            newState.isOpen = false;
+        }
         this.fireChangeEvent(newState);
         this.setState(newState);
     },
@@ -958,15 +963,15 @@ var Select = React.createClass({
             var ref = isFocused ? 'focused' : null;
             var mouseEnter = this.focusOption.bind(this, op);
             var mouseLeave = this.unfocusOption.bind(this, op);
-            var mouseDown = op.selectValue || this.selectValue.bind(this, op);
+            var click = op.selectValue || this.selectValue.bind(this, op);
             var optionResult = React.createElement(this.props.optionComponent, {
                 key: 'option-' + op[this.props.valueKey],
                 className: optionClass,
                 renderFunc: op.renderLabel || renderLabel,
                 mouseEnter: mouseEnter,
                 mouseLeave: mouseLeave,
-                mouseDown: mouseDown,
-                click: mouseDown,
+                mouseDown: undefined,
+                click: click,
                 addLabelText: this.props.addLabelText,
                 option: op,
                 ref: ref
