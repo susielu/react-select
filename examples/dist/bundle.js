@@ -925,7 +925,7 @@ var Select = React.createClass({
         if (this.props.multi && this.props.multiSum) {
             options = options.map(function (opt) {
 
-                if (valueNames.indexxOf(opt.length) === -1) {
+                if (valueNames.indexOf(opt.value) === -1) {
                     opt.type = 'opt';
                     opt.isMulti = false;
                     opt.renderLabel = undefined;
@@ -942,22 +942,11 @@ var Select = React.createClass({
                         return 'x ' + label;
                     };
 
-                    opt.selectValue = this.removeValue.bind(this, val);
+                    opt.selectValue = this.removeValue.bind(this, opt);
                 }
 
                 return opt;
-            });
-
-            // if (this.state.values.length > 0){
-            //     var multiValues =
-            // this.state.values.map(function(val){
-
-            // }, this);
-
-            // options = multiValues.concat(options).sortBy(function(a, b){
-
-            // });
-            // }
+            }, this);
         }
 
         var ops = options.map(function (op) {
