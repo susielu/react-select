@@ -810,7 +810,8 @@ var Select = React.createClass({
             return this.props.filterOptions.call(this, options, filterValue, exclude);
         } else {
             var filterOption = function filterOption(op) {
-                if (this.props.multi && exclude.indexOf(op[this.props.valueKey]) > -1) return false;
+                //Removed exclude clause here
+                //if (this.props.multi && exclude.indexOf(op[this.props.valueKey]) > -1) return false;
                 if (this.props.filterOption) return this.props.filterOption.call(this, op, filterValue);
                 var valueTest = String(op[this.props.valueKey]);
                 var labelTest = String(op[this.props.labelKey]);
@@ -907,7 +908,7 @@ var Select = React.createClass({
             focusedValue = focusedValue == null ? this.state.filteredOptions[0] : focusedValue;
         }
         // Add the current value to the filtered options in last resort
-        var options = this.state.options;
+        var options = this.props.searchable && this.state.filteredOptions.length > 0 ? this.state.filteredOptions.concat(this.state.values) : this.state.options;
         var valueNames = this.state.values.map(function (o) {
             return o.value;
         });
@@ -1103,26 +1104,29 @@ var Select = React.createClass({
                 className: 'Select-menu',
                 onMouseDown: this.handleMouseDownOnMenu
             };
+
+            var addRemoveButtons = React.createElement(
+                'div',
+                null,
+                React.createElement(
+                    'p',
+                    { onClick: this.addAll, className: 'Select-option addAll' },
+                    'Add All'
+                ),
+                this.props.clearable && !this.props.disabled ? React.createElement(
+                    'p',
+                    { onClick: this.clearValue, className: 'Select-option removeAll ' + (this.state.value ? '' : 'disabled') },
+                    'Remove All'
+                ) : undefined
+            );
+
             menu = React.createElement(
                 'div',
                 { ref: 'selectMenuContainer', className: 'Select-menu-outer' },
                 React.createElement(
                     'div',
                     menuProps,
-                    React.createElement(
-                        'div',
-                        null,
-                        React.createElement(
-                            'p',
-                            { onClick: this.addAll, className: 'Select-option addAll' },
-                            'Add All'
-                        ),
-                        this.props.clearable && !this.props.disabled ? React.createElement(
-                            'p',
-                            { onClick: this.clearValue, className: "Select-option removeAll " + (this.state.value ? '' : 'disabled') },
-                            'Remove All'
-                        ) : undefined
-                    ),
+                    addRemoveButtons,
                     this.buildMenu()
                 )
             );
