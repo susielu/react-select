@@ -612,9 +612,7 @@ var Select = React.createClass({
             return this.props.filterOptions.call(this, options, filterValue, exclude);
         } else {
             var filterOption = function(op) {
-                //Removed exclude clause here
-                //if (this.props.multi && exclude.indexOf(op[this.props.valueKey]) > -1) return false;
-                if (this.props.filterOption) return this.props.filterOption.call(this, op, filterValue);
+            if (this.props.filterOption) return this.props.filterOption.call(this, op, filterValue);
                 var valueTest = String(op[this.props.valueKey]);
                 var labelTest = String(op[this.props.labelKey]);
                 if (this.props.ignoreCase) {
@@ -916,10 +914,14 @@ var Select = React.createClass({
                 onMouseDown: this.handleMouseDownOnMenu
             };
 
-            var addRemoveButtons = (<div>
-                    <p onClick={this.addAll} className="Select-option addAll">Add All</p>
-                    { this.props.clearable && !this.props.disabled ? <p onClick={this.clearValue} className={'Select-option removeAll ' + (this.state.value ? '' : 'disabled')}>Remove All</p> : undefined }
-                </div>);
+            var addRemoveButtons;
+
+            if (this.props.multi){
+                addRemoveButtons = (<div>
+                        <p onClick={this.addAll} className="Select-option addAll">Add All</p>
+                        { this.props.clearable && !this.props.disabled ? <p onClick={this.clearValue} className={'Select-option removeAll ' + (this.state.value ? '' : 'disabled')}>Remove All</p> : undefined }
+                    </div>);
+            }
 
             menu = (
                 <div ref="selectMenuContainer" className="Select-menu-outer">
