@@ -715,7 +715,8 @@ var Select = React.createClass({
             focusedValue = focusedValue == null ? this.state.filteredOptions[0] : focusedValue;
         }
         // Add the current value to the filtered options in last resort
-        var options = this.state.filteredOptions;
+        var options = this.state.options;
+        var valueNames = this.state.values.map(function(o){return o.value; });
         if (this.props.allowCreate && this.state.inputValue.trim()) {
             var inputValue = this.state.inputValue;
             options = options.slice();
@@ -727,34 +728,31 @@ var Select = React.createClass({
             options.unshift(newOption);
         }
 
-        if (this.props.multi && this.props.multiSum){
-            options = options.map(function(opt){
-                opt.type = 'opt';
-                opt.isMulti = false;
-                opt.renderLabel = undefined;
-                opt.selectValue = undefined;
-                return opt;
-            });
+        if (this.props.multi && this.props.multiSum) {
+            options = options.map(function (opt) {
 
-            if (this.state.values.length > 0){
-                var multiValues = this.state.values.map(function(val){
-                    val.type = 'multiSum';
-                    val.isMulti = true;
+                if (valueNames.indexOf(opt.value) === -1) {
+                    opt.type = 'opt';
+                    opt.isMulti = false;
+                    opt.renderLabel = undefined;
+                    opt.selectValue = undefined;
+                } else {
+                    opt.type = 'multiSum';
+                    opt.isMulti = true;
                     var optionRenderer = this.props.optionRenderer;
-                    val.renderLabel = function(op){
+                    opt.renderLabel = function (op) {
                         var label = op.label;
-                        if (optionRenderer){
+                        if (optionRenderer) {
                             label = optionRenderer(op);
                         }
                         return 'x ' + label;
                     };
 
-                    val.selectValue = this.removeValue.bind(this, val);
-                    return val;
-                }, this);
+                    opt.selectValue = this.removeValue.bind(this, opt);
+                }
 
-                options = multiValues.concat(options);
-            }
+                return opt;
+            }, this);
         }
 
         var ops = options.map(function(op) {
@@ -848,10 +846,10 @@ var Select = React.createClass({
     },
 
     addAll () {
-    	this.props.onChange(
-    		this.state.options.map(function(d){
+        this.props.onChange(
+            this.state.options.map(function(d){
                 return d.value; }).toString(),
-    		this.state.options);
+            this.state.options);
     },
 
     render () {
@@ -907,7 +905,6 @@ var Select = React.createClass({
 
         var loading = this.isLoading() ? <span className="Select-loading" aria-hidden="true" /> : null;
         var clear = this.props.clearable && this.state.value && !this.props.disabled ? <span className="Select-clear" title={this.props.multi ? this.props.clearAllText : this.props.clearValueText} aria-label={this.props.multi ? this.props.clearAllText : this.props.clearValueText} onMouseDown={this.clearValue} onTouchEnd={this.clearValue} onClick={this.clearValue} dangerouslySetInnerHTML={{ __html: '&times;' }} /> : null;
-        var addAll = this.props.multi && this.state.isOpen ? <span onClick={this.addAll}  className="Select-addAll">+ all</span> : null;
 
         var menu;
         var menuProps;
@@ -919,7 +916,12 @@ var Select = React.createClass({
             };
             menu = (
                 <div ref="selectMenuContainer" className="Select-menu-outer">
+
                     <div {...menuProps}>
+                        <div>
+                            <p onClick={this.addAll} className="Select-option addAll">Add All</p>
+                            { this.props.clearable && this.state.value && !this.props.disabled ? <p onClick={this.clearValue} className="Select-option removeAll">Remove All</p> : undefined }
+                        </div>
                         {this.buildMenu()}
                     </div>
                 </div>
@@ -959,7 +961,7 @@ var Select = React.createClass({
                     <span className="Select-arrow-zone" onMouseDown={this.handleMouseDownOnArrow} />
                     <span className="Select-arrow" onMouseDown={this.handleMouseDownOnArrow} />
                     {loading}
-                    {addAll || clear}
+                    {clear}
                 </div>
                 {menu}
             </div>
