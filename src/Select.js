@@ -340,7 +340,7 @@ var Select = React.createClass({
 
     removeValue (valueToRemove) {
         this.setValue(this.state.values.filter(function(value) {
-            return value !== valueToRemove;
+            return value.value !== valueToRemove.value;
         }));
     },
 
@@ -920,7 +920,7 @@ var Select = React.createClass({
                     <div {...menuProps}>
                         <div>
                             <p onClick={this.addAll} className="Select-option addAll">Add All</p>
-                            { this.props.clearable && this.state.value && !this.props.disabled ? <p onClick={this.clearValue} className="Select-option removeAll">Remove All</p> : undefined }
+                            { this.props.clearable && !this.props.disabled ? <p onClick={this.clearValue} className={"Select-option removeAll " + (this.state.value ? '' : 'disabled')}>Remove All</p> : undefined }
                         </div>
                         {this.buildMenu()}
                     </div>
