@@ -795,7 +795,7 @@ var Select = React.createClass({
             focusedValue = focusedValue == null ? this.state.filteredOptions[0] : focusedValue;
         }
         // Add the current value to the filtered options in last resort
-        var options = this.props.searchable && this.state.filteredOptions.length > 0 ? this.state.filteredOptions.concat(this.state.values) : this.state.options;
+        var options = this.props.searchable && this.state.filteredOptions.length > 0 ? this.state.filteredOptions : this.state.options;
         var valueNames = this.state.values.map(function (o) {
             return o.value;
         });
