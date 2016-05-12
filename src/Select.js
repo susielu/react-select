@@ -830,7 +830,10 @@ var Select = React.createClass({
         } else if (values.length === this.props.options.length){
             return 'All';
         } else if (values.length >= (this.props.options.length - 2) ){
-            this.state.filteredOptions.forEach( function(opt){
+            var valueKeys = values.map(v => v.props.option.value);
+            this.state.options
+            .filter(o => valueKeys.indexOf(o.value) === -1)
+            .forEach(function (opt) {
                 summary = summary + ', ' + opt.label;
             });
             return 'All except' + summary;
