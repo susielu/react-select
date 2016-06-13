@@ -1053,7 +1053,7 @@ var Select = React.createClass({
             'is-focused': this.state.isFocused,
             'is-loading': this.isLoading(),
             'is-disabled': this.props.disabled,
-            'has-value': this.state.value
+            'has-value': this.state.value !== undefined && this.state.value !== null
         });
         var value = [];
         if (this.props.multi) {
