@@ -12,9 +12,7 @@
   },
   "dependencies": {
     "classnames": "^2.1.5",
-    "react-input-autosize": "0.6.5"
-    "react-input-autosize": "git://github.com/susielu/react-input-autosize.git#0cf03e6c3791081905e852a0e6cd99faf3f27e2e",
-
+    "react-input-autosize": "git://github.com/susielu/react-input-autosize.git#0cf03e6c3791081905e852a0e6cd99faf3f27e2e"
   },
   "devDependencies": {
     "babel": "^5.8.23",
