@@ -4,6 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Select from 'react-select';
 
+<<<<<<< HEAD
 import CustomKeysField from './components/CustomKeysField';
 import CustomRenderField from './components/CustomRenderField';
 import DisabledUpsellOptions from './components/DisabledUpsellOptions';
@@ -45,6 +46,34 @@ ReactDOM.render(
 		<CustomRenderField label="Custom render options/values (multi)" multi delimiter="," />
 		<RemoteSelectField label="Remote Options" hint='Type anything in the remote example to asynchronously load options. Valid alternative results are "A", "AA", and "AB"' />
 		<MultiSelectSummaryField label="Summary Multiselect" />
+=======
+import Creatable from './components/Creatable';
+import Contributors from './components/Contributors';
+import GithubUsers from './components/GithubUsers';
+import CustomComponents from './components/CustomComponents';
+import CustomRender from './components/CustomRender';
+import Multiselect from './components/Multiselect';
+import NumericSelect from './components/NumericSelect';
+import BooleanSelect from './components/BooleanSelect';
+import Virtualized from './components/Virtualized';
+import States from './components/States';
+
+ReactDOM.render(
+	<div>
+		<States label="States" searchable />
+		<Multiselect label="Multiselect" />
+		<Virtualized label="Virtualized" />
+		<Contributors label="Contributors (Async)" />
+		<GithubUsers label="Github users (Async with fetch.js)" />
+		<NumericSelect label="Numeric Values" />
+		<BooleanSelect label="Boolean Values" />
+		<CustomRender label="Custom Render Methods"/>
+		<CustomComponents label="Custom Placeholder, Option, Value, and Arrow Components" />
+		<Creatable
+			hint="Enter a value that's NOT in the list, then hit return"
+			label="Custom tag creation"
+		/>
+>>>>>>> upstream/master
 	</div>,
 	document.getElementById('example')
 );

@@ -10,7 +10,6 @@
 	// element forces the browser to repaint on scroll.  However, if these definitions are split into an
 	// outer and an inner element, the browser is able to optimize the scrolling behavior and does not
 	// have to repaint on scroll.
-
 	.border-bottom-radius( @select-input-border-radius );
 	background-color: @select-input-bg;
 	border: 1px solid @select-input-border-color;
@@ -30,7 +29,7 @@
 // wrapper
 
 .Select-menu {
-	max-height: @select-menu-max-height - 2px;
+	max-height: (@select-menu-max-height - 2px);
 	overflow-y: auto;
 }
 
@@ -39,6 +38,7 @@
 
 .Select-option {
 	box-sizing: border-box;
+	background-color: @select-option-bg;
 	color: @select-option-color;
 	cursor: pointer;
 	display: block;
@@ -48,14 +48,21 @@
 		.border-bottom-radius( @select-input-border-radius );
 	}
 
+	&.is-selected {
+		background-color: @select-option-selected-bg-fb;  /* Fallback color for IE 8 */
+		background-color: @select-option-selected-bg;
+		color: @select-option-selected-color;
+	}
+
 	&.is-focused {
+		background-color: @select-option-focused-bg-fb;  /* Fallback color for IE 8 */
 		background-color: @select-option-focused-bg;
 		color: @select-option-focused-color;
 	}
 
 	&.is-disabled {
 		color: @select-option-disabled-color;
-		cursor: not-allowed;
+		cursor: default;
 	}
 
 }
@@ -63,9 +70,7 @@
 
 // no results
 
-.Select-noresults,
-.Select-search-prompt,
-.Select-searching {
+.Select-noresults {
 	box-sizing: border-box;
 	color: @select-noresults-color;
 	cursor: default;
