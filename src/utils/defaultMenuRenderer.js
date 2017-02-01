@@ -25,6 +25,7 @@ function menuRenderer ({
 			'is-selected': isSelected,
 			'is-focused': isFocused,
 			'is-disabled': option.disabled,
+			'is-multiSum': option.isMulti
 		});
 
 		return (

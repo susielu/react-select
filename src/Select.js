@@ -141,6 +141,7 @@ const Select = React.createClass({
 			labelKey: 'label',
 			matchPos: 'any',
 			matchProp: 'any',
+			multiSumLimit: 3,
 			menuBuffer: 0,
 			menuRenderer: defaultMenuRenderer,
 			multi: false,

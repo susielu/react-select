@@ -24,6 +24,7 @@ var MultiSelectField = React.createClass({
 			disabled: false,
 			crazy: false,
 			options: FLAVOURS,
+			multiSum: 3,
 			value: [],
 		};
 	},
@@ -41,11 +42,34 @@ var MultiSelectField = React.createClass({
 			options: crazy ? WHY_WOULD_YOU : FLAVOURS,
 		});
 	},
+
+	valueRenderer(option) {
+		console.log('options', option)
+		return option.label + 'hello'
+	},
+
+	onInputChange(inputValue) {
+		console.log('input value', inputValue)
+	},
+
+	menuRenderer({}) {
+
+	},
+
 	render () {
 		return (
 			<div className="section">
 				<h3 className="section-heading">{this.props.label}</h3>
-				<Select multi simpleValue disabled={this.state.disabled} value={this.state.value} placeholder="Select your favourite(s)" options={this.state.options} onChange={this.handleSelectChange} />
+				<Select
+					multi
+					simpleValue
+					disabled={this.state.disabled}
+					value={null}
+					placeholder="Select your favourite(s)"
+					valueRenderer={this.valueRenderer}
+					options={this.state.options}
+					onInputChange={this.onInputChange}
+					onChange={this.handleSelectChange} />
 
 				<div className="checkbox-list">
 					<label className="checkbox">

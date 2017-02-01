@@ -288,6 +288,17 @@
   margin-left: 10px;
   padding: 0;
 }
+.Select--multi .Select-control > span:first-child {
+  padding-left: 7px;
+  vertical-align: middle;
+}
+.Select--multi .Select-option.is-multiSum span {
+  padding: 4px;
+  background: rgba(0, 126, 255, 0.08);
+  color: #007eff;
+  border: 1px solid rgba(0, 126, 255, 0.24);
+  border-radius: 2px;
+}
 .Select--multi.has-value .Select-input {
   margin-left: 5px;
 }
