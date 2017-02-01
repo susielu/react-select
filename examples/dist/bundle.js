@@ -432,7 +432,8 @@ var Select = React.createClass({
         // reset internal filter string
         this._optionsFilterString = '';
 
-        var values = this.initValuesArray(value, options);
+        // also pass the exiting values so that we don't lose option mappings for the async use case
+        var values = this.initValuesArray(value, options, this.state.values);
         var filteredOptions = this.filterOptions(options, values);
 
         var focusedOption;
@@ -466,7 +467,7 @@ var Select = React.createClass({
         }
     },
 
-    initValuesArray: function initValuesArray(values, options) {
+    initValuesArray: function initValuesArray(values, options, existingValues) {
         var _this5 = this;
 
         if (!Array.isArray(values)) {
@@ -481,6 +482,12 @@ var Select = React.createClass({
                 for (var key in options) {
                     if (options.hasOwnProperty(key) && options[key] && (options[key][_this5.props.valueKey] === val || typeof options[key][_this5.props.valueKey] === 'number' && options[key][_this5.props.valueKey].toString() === val)) {
                         return options[key];
+                    }
+                }
+                // Also check the existing values
+                for (var key in existingValues) {
+                    if (existingValues.hasOwnProperty(key) && existingValues[key] && (existingValues[key][_this5.props.valueKey] === val || typeof existingValues[key][_this5.props.valueKey] === 'number' && existingValues[key][_this5.props.valueKey].toString() === val)) {
+                        return existingValues[key];
                     }
                 }
                 return { value: val, label: val };
@@ -1094,11 +1101,6 @@ var Select = React.createClass({
 
         var loading = this.isLoading() ? React.createElement('span', { className: 'Select-loading', 'aria-hidden': 'true' }) : null;
         var clear = this.props.clearable && this.state.value && !this.props.disabled ? React.createElement('span', { className: 'Select-clear', title: this.props.multi ? this.props.clearAllText : this.props.clearValueText, 'aria-label': this.props.multi ? this.props.clearAllText : this.props.clearValueText, onMouseDown: this.clearValue, onTouchEnd: this.clearValue, onClick: this.clearValue, dangerouslySetInnerHTML: { __html: '&times;' } }) : null;
-        var addAll = this.props.multi && this.state.isOpen ? React.createElement(
-            'span',
-            { onClick: this.addAll, className: 'Select-addAll' },
-            '+ all'
-        ) : null;
 
         var menu;
         var menuProps;
@@ -1108,12 +1110,32 @@ var Select = React.createClass({
                 className: 'Select-menu',
                 onMouseDown: this.handleMouseDownOnMenu
             };
+
+            var addRemoveButtons;
+
+            if (this.props.multi) {
+                addRemoveButtons = React.createElement(
+                    'div',
+                    null,
+                    React.createElement(
+                        'p',
+                        { onClick: this.addAll, className: 'Select-option addAll' },
+                        'Add All'
+                    ),
+                    this.props.clearable && !this.props.disabled ? React.createElement(
+                        'p',
+                        { onClick: this.clearValue, className: 'Select-option removeAll ' + (this.state.value ? '' : 'disabled') },
+                        'Remove All'
+                    ) : undefined
+                );
+            }
             menu = React.createElement(
                 'div',
                 { ref: 'selectMenuContainer', className: 'Select-menu-outer' },
                 React.createElement(
                     'div',
                     menuProps,
+                    addRemoveButtons,
                     this.buildMenu()
                 )
             );
@@ -1163,7 +1185,7 @@ var Select = React.createClass({
                 React.createElement('span', { className: 'Select-arrow-zone', onMouseDown: this.handleMouseDownOnArrow }),
                 React.createElement('span', { className: 'Select-arrow', onMouseDown: this.handleMouseDownOnArrow }),
                 loading,
-                addAll || clear
+                clear
             ),
             menu
         );

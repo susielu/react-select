@@ -920,7 +920,6 @@ var Select = React.createClass({
 
         var loading = this.isLoading() ? <span className="Select-loading" aria-hidden="true" /> : null;
         var clear = this.props.clearable && this.state.value && !this.props.disabled ? <span className="Select-clear" title={this.props.multi ? this.props.clearAllText : this.props.clearValueText} aria-label={this.props.multi ? this.props.clearAllText : this.props.clearValueText} onMouseDown={this.clearValue} onTouchEnd={this.clearValue} onClick={this.clearValue} dangerouslySetInnerHTML={{ __html: '&times;' }} /> : null;
-        var addAll = this.props.multi && this.state.isOpen ? <span onClick={this.addAll} className="Select-addAll">+ all</span> : null;
 
         var menu;
         var menuProps;
@@ -930,9 +929,21 @@ var Select = React.createClass({
                 className: 'Select-menu',
                 onMouseDown: this.handleMouseDownOnMenu
             };
+
+            var addRemoveButtons;
+
+
+			if (this.props.multi){
+                addRemoveButtons = (<div>
+                        <p onClick={this.addAll} className="Select-option addAll">Add All</p>
+                        { this.props.clearable && !this.props.disabled ? <p onClick={this.clearValue} className={'Select-option removeAll ' + (this.state.value ? '' : 'disabled')}>Remove All</p> : undefined }
+                    </div>);
+            }
             menu = (
                 <div ref="selectMenuContainer" className="Select-menu-outer">
                     <div {...menuProps}>
+						{addRemoveButtons}
+
                         {this.buildMenu()}
                     </div>
                 </div>
@@ -972,7 +983,7 @@ var Select = React.createClass({
                     <span className="Select-arrow-zone" onMouseDown={this.handleMouseDownOnArrow} />
                     <span className="Select-arrow" onMouseDown={this.handleMouseDownOnArrow} />
                     {loading}
-                    {addAll || clear}
+                    {clear}
                 </div>
                 {menu}
             </div>
